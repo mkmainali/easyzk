@@ -1,0 +1,35 @@
+This is a simple gui tool to do several operations on the zookeeper.
+
+It allows to view the node data, delete node, update node data or move node from one place to another.
+
+The program uses the defaults icons from jlfgr.jar . If you want to see the icons in the menu bar download the jar from Java website and put it in the classpath.
+
+HOW TO BUILD 
+
+1. The project can be built using maven. It creates a executable jar.
+
+HOW TO USE
+
+First it is required to add a zookeeper cluster. To add the cluster click "Add" button and it will ask to enter the cluster name and the connect string. The cluster name can be anything except that there cannot be two clusters with same name. This name is used locally to differentiate different zookeeper clusters and is not related with the zookeeper's cluster. The connect string should be in format host:port list separated by ",".
+
+It is possible to modify/delete the cluster information through Edit/Delete button.
+
+To view the znodes data, connect to the cluster by clicking on the "Import" button.
+
+The znodes information is shown on the left side and the znodes data on the right side.
+
+OPERATIONS 
+
+1. Add will add the given znode with data under the currently selected node. All the intermediate znodes will be created with empty data if any present. 
+
+2. Delete will delete the current znode and all the underlying child nodes if any. 
+
+3. Move will move the current znode and all the underlying child znodes if any under the specified znode. The complete path, starting from the root node, should be given as a destination node. 
+
+4. Update will update the current znodes data.
+
+ISSUES 
+
+1. The tree view of the znodes on the left side is not update dynamically. After making changes to the znodes to see the latest structure, it is required to collapse the tree once and expand again. Dynamically updating the tree view will be considered in future. 
+
+2. Please report if you find any bugs, problems or if you have any requests.
