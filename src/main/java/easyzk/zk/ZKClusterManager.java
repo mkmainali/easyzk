@@ -44,6 +44,7 @@ public class ZKClusterManager {
         File f = new File(propertiesFile);
         if(!f.exists()){
             logger.info("Saved cluster info not found");
+            return;
         }
         Properties props = new Properties();
         try {

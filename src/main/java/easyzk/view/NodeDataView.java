@@ -45,7 +45,7 @@ public class NodeDataView extends JPanel {
 
     private static final JTextField nodeCreatedField = new JTextField();
 
-    private static final JTextArea nodeDataField = new JTextArea();
+    private static final JTextArea nodeDataField = new JTextArea(10,20);
 
     private static final JScrollPane dataScrollPane = new JScrollPane(nodeDataField);
 
@@ -65,7 +65,7 @@ public class NodeDataView extends JPanel {
         this.easyZk = easyZk;
         Font font = new Font("Serif", Font.BOLD, 15);
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-        nodeDataField.setPreferredSize(new Dimension(20, 400));
+        dataScrollPane.setPreferredSize(new Dimension(20, 400));
         setBorder(BorderFactory.createTitledBorder("Node details"));
         JPanel dataPanel = new JPanel();
 

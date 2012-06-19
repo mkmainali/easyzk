@@ -96,7 +96,7 @@ public class ZKHandler {
             Stat stat = zk.exists(node, false);
             if(stat != null){
                 byte[] rawData = zk.getData(node, false, null);
-                String data = new String(rawData, DEFAULT_CHARSET);
+                String data = rawData == null ? "" : new String(rawData, DEFAULT_CHARSET);
                 return new NodeInfo(node, String.valueOf(stat.getVersion()), String.valueOf(stat.getCtime()), stat.getNumChildren(), data);
             }
         } catch (KeeperException e) {
