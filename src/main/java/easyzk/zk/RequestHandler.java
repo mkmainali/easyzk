@@ -1,9 +1,18 @@
 package easyzk.zk;
 
+import com.google.common.io.Files;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import easyzk.exception.EasyZkException;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class RequestHandler {
 
@@ -28,14 +37,70 @@ public class RequestHandler {
         return handler.getAllChildren(node);
     }
 
-    public List<NodeInfo> getNodeInfoList(String clusterName, String parentNode) throws EasyZkException {
-        List<String> childList = getChildList(clusterName, parentNode);
-        List<NodeInfo> nodeInfos = new ArrayList<NodeInfo>();
-        for(String child : childList){
-            nodeInfos.add(getNodeInfo(clusterName, child));
+    public void exportToJson(String filename, String clusterName) throws EasyZkException {
+        //output json
+        String rootNode = "/";
+        ZKHandler handler = ZKHandler.getInstance(clusterName);
+        JsonObject jsonObject = getAsJson(handler, rootNode, null);
+        File f = new File(filename);
+        if(f.exists()){
+            throw new EasyZkException("File " + filename +" already exists");
         }
-        return nodeInfos;
+        try {
+            FileWriter writer = new FileWriter(f);
+            writer.write(jsonObject.toString());
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            throw new EasyZkException("Failed to export data to json", e);
+        }
     }
+
+    public void importFromJson(String filename, String clusterName) throws EasyZkException {
+        File f = new File(filename);
+        if(!f.exists()){
+            throw new EasyZkException("File " + filename +" does not exist");
+        }
+        String jsonString = null;
+        try {
+            jsonString = Files.toString(f, Charset.forName("UTF-8"));
+        } catch (IOException e) {
+            throw new EasyZkException("Failed to import from json ", e);
+        }
+        if(jsonString == null || jsonString.isEmpty()){
+            throw new EasyZkException("File is empty");
+        }
+        JsonParser parser = new JsonParser();
+        JsonObject jsonObject = parser.parse(jsonString).getAsJsonObject();
+        Set<Map.Entry<String,JsonElement>> entries = jsonObject.entrySet();
+        ZKHandler handler = ZKHandler.getInstance(clusterName);
+        for(Map.Entry<String,JsonElement> entry : entries){
+            String nodeName = entry.getKey();
+            String data = jsonObject.get(nodeName).getAsString();
+            if(handler.nodeExists(nodeName)){
+                handler.put(nodeName, data);
+            }else{
+                handler.add(nodeName, data);
+            }
+        }
+    }
+
+    private JsonObject getAsJson(ZKHandler handler, String node, JsonObject parentJson) throws EasyZkException {
+        if(parentJson == null){
+            parentJson = new JsonObject();
+        }
+        //for current node data
+        parentJson.addProperty(node, handler.get(node).getData());
+        List<String> childList = handler.getAllChildren(node);
+        if(!childList.isEmpty()){
+            for(String child : childList){
+                String childPath = node.endsWith("/") ? node + child : node + "/" + child;
+                getAsJson(handler, childPath, parentJson);
+            }
+        }
+        return parentJson;
+    }
+
     public NodeInfo getNodeInfo(String clusterName, String node) throws EasyZkException{
         validate(clusterName, node);
 

@@ -8,15 +8,13 @@ import easyzk.zk.RequestHandler;
 import easyzk.zk.ZKClusterManager;
 
 
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JPanel;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.io.File;
 import java.util.List;
 
 public class MenuListener implements ActionListener {
@@ -50,6 +48,12 @@ public class MenuListener implements ActionListener {
                 break;
             case DELETE:
                 processDelete();
+                break;
+            case IMPORT:
+                processImport();
+                break;
+            case EXPORT:
+                processExport();
                 break;
             default:
                 break;
@@ -153,6 +157,47 @@ public class MenuListener implements ActionListener {
         }
     }
 
+    private void processExport(){
+        String currentCluster = this.component.getCurrentCluster();
+        if(currentCluster == null){
+            ViewUtility.handleMessage(component, "Failed to export. Not connected to any clusters");
+            return;
+        }
+        String file = getPath();
+        if(file != null){
+            try {
+                requestHandler.exportToJson(file, currentCluster);
+            } catch (EasyZkException e) {
+                ViewUtility.handleException(component, e);
+            }
+        }
+    }
+
+    private void processImport(){
+        String currentCluster = this.component.getCurrentCluster();
+        if(currentCluster == null){
+            ViewUtility.handleMessage(component, "Failed to import. Not connected to any clusters");
+            return;
+        }
+        String file = getPath();
+        if(file != null){
+            try {
+                requestHandler.importFromJson(file, currentCluster);
+            } catch(EasyZkException e){
+                ViewUtility.handleException(component, e);
+            }
+        }
+    }
+
+    private String getPath(){
+        JFileChooser fileChooser = new JFileChooser();
+        int retValue = fileChooser.showOpenDialog(component);
+        if(retValue == JFileChooser.APPROVE_OPTION){
+            File f = fileChooser.getSelectedFile();
+            return f.getAbsolutePath();
+        }
+        return null;
+    }
     private String getInput(String msg, String title, List<String> options){
         String input = (String) JOptionPane.showInputDialog(
                 component,

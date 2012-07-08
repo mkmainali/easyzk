@@ -15,7 +15,9 @@ public class ToolBar {
         NEW("Add24.gif","add","Add"),
         EDIT("Edit24.gif","edit","Edit"),
         DELETE("Delete24.gif","delete","Delete"),
-        CONNECT("Import24.gif","import","Import");
+        CONNECT("Import24.gif","connect","Connect"),
+        EXPORT("export", "export", "Export"),
+        IMPORT("import", "import", "Import");
 
         private final String iconName;
         private final String commandName;

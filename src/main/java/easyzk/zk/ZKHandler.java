@@ -112,6 +112,18 @@ public class ZKHandler {
         return null;
     }
 
+    public void add(String node, String data) throws EasyZkException{
+        try {
+            zk.create(node, data.getBytes(DEFAULT_CHARSET), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+        } catch (KeeperException e) {
+            logger.error("Failed to add node. ", e);
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted");
+            logger.error("Failed to add node.", e);
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Failed to add node.", e);
+        }
+    }
     public void add(String parent, String node, String data) throws EasyZkException{
         String parent2 = parent.endsWith(SEPARATOR) ? parent.substring(0, parent.lastIndexOf(SEPARATOR)) : parent;
         String[] allNodes = parent2.split(SEPARATOR);
@@ -210,5 +222,18 @@ public class ZKHandler {
             logger.debug("Interrupted");
             throw new EasyZkException(e);
         }
+    }
+
+    public boolean nodeExists(String node) throws EasyZkException{
+        try {
+            if(zk.exists(node, false) != null){
+                return true;
+            }
+        } catch (KeeperException e) {
+            throw new EasyZkException(e);
+        } catch (InterruptedException e) {
+            throw new EasyZkException(e);
+        }
+        return false;
     }
 }
