@@ -15,7 +15,9 @@ public class ZKClusterManager {
 
     private static final Logger logger = LoggerFactory.getLogger(ZKClusterManager.class);
 
-    private static final String propertiesFile = "easyzk.properties";
+    private static final String propertiesFile = ".easyzk";
+
+    private static final String clusterInfoDir = System.getProperty("user.home");
 
     private static final Map<String, ZKCluster> clusterCache = new ConcurrentHashMap<String, ZKCluster>();
 
@@ -41,7 +43,7 @@ public class ZKClusterManager {
 
     private void loadCluster() throws EasyZkException{
         logger.info("Loading saved cluster info");
-        File f = new File(propertiesFile);
+        File f = new File(clusterInfoDir, propertiesFile);
         if(!f.exists()){
             logger.info("Saved cluster info not found");
             return;
@@ -63,7 +65,7 @@ public class ZKClusterManager {
     }
 
     private void saveClusterInfo() throws EasyZkException{
-        File f = new File(propertiesFile);
+        File f = new File(clusterInfoDir, propertiesFile);
         Properties props = new Properties();
         for(ZKCluster cluster : clusterCache.values()){
             props.put(cluster.getClusterName(), cluster.getZKString());

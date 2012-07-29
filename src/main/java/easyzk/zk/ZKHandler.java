@@ -17,7 +17,7 @@ public class ZKHandler {
     private static final Logger logger = LoggerFactory.getLogger(ZKHandler.class);
 
     private static final int ZK_TIMEOUT = 60000;
-    private static final String DEFAULT_CHARSET = "utf-8";
+    private static final String DEFAULT_CHARSET = "UTF-8";
     private static final String SEPARATOR = "/";
 
     private final String zkString;
